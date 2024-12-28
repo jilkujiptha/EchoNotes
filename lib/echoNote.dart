@@ -23,17 +23,12 @@ class _EchoNotesState extends State<EchoNotes> with TickerProviderStateMixin {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 66, 208, 71),
+        backgroundColor: const Color.fromARGB(255, 36, 167, 40),
         title: Text(
           "Echo Notes",
           style: TextStyle(color: Colors.white),
         ),
-      ),
-      body: Container(
-        width: MediaQuery.of(context).size.width,
-        height: 50,
-        color: const Color.fromARGB(255, 66, 208, 71),
-        child: TabBar(
+        bottom: TabBar(
             controller: echo,
             unselectedLabelColor: Colors.black,
             labelColor: Colors.white,
@@ -51,16 +46,19 @@ class _EchoNotesState extends State<EchoNotes> with TickerProviderStateMixin {
               ),
             ]),
       ),
+      body: TabBarView(
+          controller: echo, children: [Container(), Container(), Container()]),
       floatingActionButtonLocation: ExpandableFab.location,
       floatingActionButton: ExpandableFab(
+          duration: Duration(microseconds: 250),
           key: _key,
           type: ExpandableFabType.up,
           pos: ExpandableFabPos.right,
           childrenOffset: Offset(5, 5),
           distance: 60,
           openButtonBuilder: RotateFloatingActionButtonBuilder(
-            backgroundColor: const Color.fromARGB(255, 66, 208, 71),
-            foregroundColor: const Color.fromARGB(255, 66, 208, 71),
+            backgroundColor: const Color.fromARGB(255, 36, 167, 40),
+            foregroundColor: const Color.fromARGB(255, 36, 167, 40),
             child: Icon(
               Icons.add,
               color: Colors.black,
@@ -72,36 +70,48 @@ class _EchoNotesState extends State<EchoNotes> with TickerProviderStateMixin {
               builder: (context, onPressed, progress) {
                 return FloatingActionButton(
                     backgroundColor: const Color.fromARGB(255, 66, 208, 71),
-                    onPressed: onPressed,
-                    child: IconButton(
-                        onPressed: () {},
-                        icon: Icon(
-                          Icons.notes,
-                          size: 35,
-                          color: Colors.black,
-                        )));
+                    onPressed: () {
+                      Navigator.pushNamed(context, "text");
+                    },
+                    child: Icon(
+                      Icons.notes,
+                      size: 35,
+                      color: Colors.black,
+                    ));
               }),
           children: [
             FloatingActionButton.small(
+                heroTag: null,
                 backgroundColor: const Color.fromARGB(255, 66, 208, 71),
-                child: IconButton(
-                  onPressed: () {},
-                  icon: Icon(
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.pushNamed(context, "list");
+                  },
+                  child: Icon(
                     Icons.check_box,
                     color: Colors.black,
                   ),
                 ),
                 onPressed: () {}),
-            FloatingActionButton.small(
-                backgroundColor: const Color.fromARGB(255, 66, 208, 71),
-                child: IconButton(
-                  onPressed: () {},
-                  icon: Icon(
-                    Icons.done,
-                    color: Colors.black,
+            GestureDetector(
+              onTap: () {
+                Navigator.pushNamed(context, "task");
+              },
+              child: FloatingActionButton.small(
+                  heroTag: null,
+                  backgroundColor: const Color.fromARGB(255, 66, 208, 71),
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.pushNamed(context, "task");
+                    },
+                    child: Image.asset(
+                      "./images/checked.png",
+                      width: 20,
+                      height: 20,
+                    ),
                   ),
-                ),
-                onPressed: () {}),
+                  onPressed: () {}),
+            ),
           ]),
     );
   }
