@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:hive/hive.dart';
+import 'package:staggered_grid_view_flutter/widgets/staggered_grid_view.dart';
+import 'package:staggered_grid_view_flutter/widgets/staggered_tile.dart';
 
 class EchoNotes extends StatefulWidget {
   const EchoNotes({super.key});
@@ -11,6 +15,10 @@ class EchoNotes extends StatefulWidget {
 class _EchoNotesState extends State<EchoNotes> with TickerProviderStateMixin {
   final _key = GlobalKey<ExpandableFabState>();
   late TabController echo;
+  final List ls = [];
+
+  // var _myBox = Hive.box("mybox");
+
   @override
   void initState() {
     // TODO: implement initState
@@ -46,8 +54,17 @@ class _EchoNotesState extends State<EchoNotes> with TickerProviderStateMixin {
               ),
             ]),
       ),
-      body: TabBarView(
-          controller: echo, children: [Container(), Container(), Container()]),
+      body: TabBarView(controller: echo, children: [
+        StaggeredGridView.countBuilder(
+          crossAxisCount: 4,
+          itemBuilder: (context, index) => Card(),
+          staggeredTileBuilder: (int index) => new StaggeredTile.fit(2),
+          mainAxisSpacing: 4,
+          crossAxisSpacing: 4,
+        ),
+        Container(),
+        Container()
+      ]),
       floatingActionButtonLocation: ExpandableFab.location,
       floatingActionButton: ExpandableFab(
           duration: Duration(microseconds: 250),

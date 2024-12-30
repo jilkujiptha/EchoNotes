@@ -10,6 +10,9 @@ class Task extends StatefulWidget {
 class _TaskState extends State<Task> {
   TextEditingController title = TextEditingController();
   TextEditingController task = TextEditingController();
+  DateTime _currentDate = DateTime.now();
+  TimeOfDay _currentTime = TimeOfDay.now();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -32,6 +35,7 @@ class _TaskState extends State<Task> {
       ),
       body: Container(
         padding: EdgeInsets.all(10),
+        margin: EdgeInsets.all(10),
         child: Column(
           children: [
             TextField(
@@ -65,6 +69,23 @@ class _TaskState extends State<Task> {
                             width: 2))),
               ),
             ),
+            SizedBox(
+              height: 10,
+            ),
+            Row(
+              children: [
+                Text(
+                    "${_currentDate.year}-${_currentDate.month}-${_currentDate.day}",
+                    style: TextStyle(
+                        color: const Color.fromARGB(255, 36, 167, 40),
+                        fontWeight: FontWeight.bold)),
+                Spacer(),
+                Text("${_currentTime.hour}:${_currentTime.minute}",
+                    style: TextStyle(
+                        color: const Color.fromARGB(255, 36, 167, 40),
+                        fontWeight: FontWeight.bold))
+              ],
+            )
           ],
         ),
       ),

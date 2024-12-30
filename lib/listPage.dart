@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 
 class ListPage extends StatefulWidget {
   const ListPage({super.key});
@@ -10,7 +11,17 @@ class ListPage extends StatefulWidget {
 class _ListPageState extends State<ListPage> {
   TextEditingController title = TextEditingController();
   TextEditingController list = TextEditingController();
-  final List ls = [];
+  List ls = [];
+  int? index = 0;
+
+  final _myBox = Hive.box("mybox");
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getData();
+  }
 
   void addData() {
     setState(() {
@@ -23,6 +34,10 @@ class _ListPageState extends State<ListPage> {
     setState(() {
       ls.remove(index);
     });
+  }
+
+  void getData() {
+    ls = _myBox.get("key");
   }
 
   @override
@@ -38,7 +53,9 @@ class _ListPageState extends State<ListPage> {
         ),
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.pushNamed(context, "echo");
+            },
             icon: Icon(
               Icons.done,
               color: Colors.white,
