@@ -12,16 +12,8 @@ class _ListPageState extends State<ListPage> {
   TextEditingController title = TextEditingController();
   TextEditingController list = TextEditingController();
   List ls = [];
-  int? index = 0;
 
-  final _myBox = Hive.box("mybox");
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    getData();
-  }
+  final _myBox = Hive.box('mybox');
 
   void addData() {
     setState(() {
@@ -36,9 +28,10 @@ class _ListPageState extends State<ListPage> {
     });
   }
 
-  void getData() {
-    ls = _myBox.get("key");
-  }
+  Map map = {
+    // "title":title.text,
+    // "list":list.text,
+  };
 
   @override
   Widget build(BuildContext context) {
@@ -54,6 +47,8 @@ class _ListPageState extends State<ListPage> {
         actions: [
           IconButton(
             onPressed: () {
+              print(title.text);
+              print("++++++++++++++++++++++++++++++++++++++++");
               Navigator.pushNamed(context, "echo");
             },
             icon: Icon(
@@ -113,7 +108,7 @@ class _ListPageState extends State<ListPage> {
                   itemCount: ls.length,
                   itemBuilder: (context, index) {
                     return ListTile(
-                      title: Text(ls[index]),
+                      // title: Text(),
                       trailing: IconButton(
                         onPressed: () {
                           removeData(ls[index]);

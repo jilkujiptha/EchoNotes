@@ -17,8 +17,6 @@ class _EchoNotesState extends State<EchoNotes> with TickerProviderStateMixin {
   late TabController echo;
   final List ls = [];
 
-  // var _myBox = Hive.box("mybox");
-
   @override
   void initState() {
     // TODO: implement initState
