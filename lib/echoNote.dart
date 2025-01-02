@@ -1,9 +1,8 @@
+import 'package:echonotes/listPage.dart';
+import 'package:echonotes/taskPage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:hive/hive.dart';
-import 'package:staggered_grid_view_flutter/widgets/staggered_grid_view.dart';
-import 'package:staggered_grid_view_flutter/widgets/staggered_tile.dart';
+import 'package:hive_flutter/adapters.dart';
 
 class EchoNotes extends StatefulWidget {
   const EchoNotes({super.key});
@@ -13,34 +12,50 @@ class EchoNotes extends StatefulWidget {
 }
 
 class _EchoNotesState extends State<EchoNotes> with TickerProviderStateMixin {
+  late TabController _tabController;
   final _key = GlobalKey<ExpandableFabState>();
-  late TabController echo;
-  final List ls = [];
+  var _mydata = Hive.box('mydata');
+  List list_items = [];
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    echo = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 3, vsync: this);
+    listData();
+  }
+
+  void listData() {
+    if (_mydata.get('list') != null) {
+      list_items = _mydata.get('list');
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 36, 167, 40),
-        title: Text(
-          "Echo Notes",
-          style: TextStyle(color: Colors.white),
-        ),
-        bottom: TabBar(
-            controller: echo,
-            unselectedLabelColor: Colors.black,
+        backgroundColor: const Color.fromARGB(239, 255, 255, 255),
+        appBar: AppBar(
+          backgroundColor: Colors.greenAccent[700],
+          iconTheme: IconThemeData(
+            color: Colors.white,
+          ),
+          title: const Text(
+            "Echo Note",
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          bottom: TabBar(
+            controller: _tabController,
             labelColor: Colors.white,
+            dividerColor: Colors.white,
             indicatorColor: Colors.white,
-            labelStyle: TextStyle(fontSize: 20),
-            tabs: [
+            labelStyle: const TextStyle(
+              fontSize: 18,
+            ),
+            tabs: const [
               Tab(
                 text: "Text",
               ),
@@ -50,84 +65,139 @@ class _EchoNotesState extends State<EchoNotes> with TickerProviderStateMixin {
               Tab(
                 text: "Task",
               ),
-            ]),
-      ),
-      body: TabBarView(controller: echo, children: [
-        StaggeredGridView.countBuilder(
-          crossAxisCount: 4,
-          itemBuilder: (context, index) => Card(),
-          staggeredTileBuilder: (int index) => new StaggeredTile.fit(2),
-          mainAxisSpacing: 4,
-          crossAxisSpacing: 4,
+            ],
+          ),
         ),
-        Container(),
-        Container()
-      ]),
-      floatingActionButtonLocation: ExpandableFab.location,
-      floatingActionButton: ExpandableFab(
-          duration: Duration(microseconds: 250),
+        floatingActionButtonLocation: ExpandableFab.location,
+        floatingActionButton: ExpandableFab(
           key: _key,
           type: ExpandableFabType.up,
           pos: ExpandableFabPos.right,
-          childrenOffset: Offset(5, 5),
+          childrenOffset: const Offset(5, 5),
           distance: 60,
           openButtonBuilder: RotateFloatingActionButtonBuilder(
-            backgroundColor: const Color.fromARGB(255, 36, 167, 40),
-            foregroundColor: const Color.fromARGB(255, 36, 167, 40),
-            child: Icon(
-              Icons.add,
-              color: Colors.black,
-              size: 35,
-            ),
+            backgroundColor: Colors.greenAccent[700],
+            child: const Icon(Icons.add),
+            fabSize: ExpandableFabSize.regular,
+            angle: 3.14 * 2,
           ),
           closeButtonBuilder: FloatingActionButtonBuilder(
-              size: 50,
-              builder: (context, onPressed, progress) {
-                return FloatingActionButton(
-                    backgroundColor: const Color.fromARGB(255, 66, 208, 71),
-                    onPressed: () {
-                      Navigator.pushNamed(context, "text");
-                    },
-                    child: Icon(
-                      Icons.notes,
-                      size: 35,
-                      color: Colors.black,
-                    ));
-              }),
+            size: 56,
+            builder: (context, onPressed, progress) {
+              return FloatingActionButton(
+                backgroundColor: Colors.greenAccent[700],
+                onPressed: onPressed,
+                child: const Icon(
+                  Icons.close,
+                ),
+              );
+            },
+          ),
           children: [
             FloatingActionButton.small(
-                heroTag: null,
-                backgroundColor: const Color.fromARGB(255, 66, 208, 71),
-                child: GestureDetector(
-                  onTap: () {
-                    Navigator.pushNamed(context, "list");
-                  },
-                  child: Icon(
-                    Icons.check_box,
-                    color: Colors.black,
-                  ),
-                ),
-                onPressed: () {}),
-            GestureDetector(
-              onTap: () {
-                Navigator.pushNamed(context, "task");
+              backgroundColor: Colors.greenAccent[700],
+              heroTag: null,
+              onPressed: () {
+                Navigator.pushNamed(context, "/notes");
               },
-              child: FloatingActionButton.small(
-                  heroTag: null,
-                  backgroundColor: const Color.fromARGB(255, 66, 208, 71),
-                  child: GestureDetector(
-                    onTap: () {
-                      Navigator.pushNamed(context, "task");
-                    },
-                    child: Image.asset(
-                      "./images/checked.png",
-                      width: 20,
-                      height: 20,
-                    ),
-                  ),
-                  onPressed: () {}),
+              child: const Icon(
+                Icons.notes,
+              ),
             ),
-          ]),
-    );
+            FloatingActionButton.small(
+              heroTag: null,
+              backgroundColor: Colors.greenAccent[700],
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => ListPage(),
+                  ),
+                );
+              },
+              child: const Icon(
+                Icons.check_box,
+              ),
+            ),
+            FloatingActionButton.small(
+              heroTag: null,
+              backgroundColor: Colors.greenAccent[700],
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => Task(),
+                  ),
+                );
+              },
+              child: Image.asset(
+                "./lib/Icons/check.png",
+                height: 20,
+                width: 20,
+              ),
+            ),
+          ],
+        ),
+        body: TabBarView(
+          controller: _tabController,
+          children: [
+            Container(
+              child: const Center(
+                child: Text("Text"),
+              ),
+            ),
+            Container(
+                child: Expanded(
+                    child: GridView.builder(
+              padding: EdgeInsets.only(top: 20, left: 10, right: 10),
+              itemCount: list_items.length,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                childAspectRatio: 2 / 2,
+                crossAxisSpacing: 10,
+                mainAxisSpacing: 10,
+                crossAxisCount: 2,
+              ),
+              itemBuilder: (context, index) {
+                var items = list_items[index];
+                return Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(15),
+                    color: Colors.blueAccent,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ListTile(
+                        contentPadding: EdgeInsets.all(10),
+                        title: Text(
+                          items['title'],
+                        ),
+                        trailing: IconButton(
+                          onPressed: () {},
+                          icon: Icon(Icons.more_vert),
+                        ),
+                      ),
+                      Expanded(
+                        child: ListView.builder(
+                          itemCount: items['items'].length,
+                          itemBuilder: (context, i) {
+                            return Container(
+                              padding: EdgeInsets.only(left: 10),
+                              margin: EdgeInsets.only(bottom: 10),
+                              child: Text(items['items'][i]),
+                            );
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ))),
+            Container(
+              child: const Center(
+                child: Text("Task"),
+              ),
+            ),
+          ],
+        ));
   }
 }

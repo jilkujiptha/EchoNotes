@@ -1,5 +1,6 @@
+import 'package:echonotes/echoNote.dart';
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
+import 'package:hive_flutter/adapters.dart';
 
 class ListPage extends StatefulWidget {
   const ListPage({super.key});
@@ -9,119 +10,172 @@ class ListPage extends StatefulWidget {
 }
 
 class _ListPageState extends State<ListPage> {
-  TextEditingController title = TextEditingController();
-  TextEditingController list = TextEditingController();
+  TextEditingController _title = TextEditingController();
+  TextEditingController _content = TextEditingController();
   List ls = [];
-
-  final _myBox = Hive.box('mybox');
-
-  void addData() {
-    setState(() {
-      ls.add(list.text);
-      list.clear();
-    });
-  }
-
-  void removeData(String index) {
-    setState(() {
-      ls.remove(index);
-    });
-  }
-
-  Map map = {
-    // "title":title.text,
-    // "list":list.text,
-  };
+  List list = [];
+  var _mydata = Hive.box('mydata');
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color.fromARGB(239, 255, 255, 255),
       appBar: AppBar(
-        iconTheme: IconThemeData(color: Colors.white),
-        backgroundColor: const Color.fromARGB(255, 36, 167, 40),
-        title: Text(
+        iconTheme: IconThemeData(
+          color: Colors.white,
+        ),
+        backgroundColor: const Color.fromRGBO(0, 200, 83, 1),
+        title: const Text(
           "Add New List",
-          style: TextStyle(color: Colors.white),
+          style: TextStyle(
+            color: Colors.white,
+          ),
         ),
         actions: [
           IconButton(
             onPressed: () {
-              print(title.text);
-              print("++++++++++++++++++++++++++++++++++++++++");
-              Navigator.pushNamed(context, "echo");
+              if (_title.text == "") {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text("Empty title"),
+                  ),
+                );
+              } else if (ls == []) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text("Add at least one item"),
+                  ),
+                );
+              } else {
+                var data = {
+                  "title": _title.text,
+                  "items": ls,
+                };
+                if (_mydata.get('list') != null) {
+                  list = _mydata.get('list');
+                  list.add(data);
+                  _mydata.put('list', list);
+                } else {
+                  list.add(data);
+                  _mydata.put('list', list);
+                }
+                Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(
+                    builder: (context) => EchoNotes(),
+                  ),
+                  (route) => false,
+                );
+              }
+
+              print("======================================================");
+              print(_mydata.get('list'));
             },
-            icon: Icon(
+            icon: const Icon(
               Icons.done,
               color: Colors.white,
             ),
-          ),
+          )
         ],
       ),
       body: Container(
+        width: MediaQuery.of(context).size.width,
+        height: MediaQuery.of(context).size.height,
         padding: EdgeInsets.all(10),
         child: Column(
           children: [
-            TextField(
-              controller: title,
-              decoration: InputDecoration(
+            Container(
+              child: TextField(
+                cursorColor: Colors.greenAccent[700],
+                controller: _title,
+                decoration: InputDecoration(
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                      color: Colors.black54,
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                      color: const Color.fromRGBO(0, 200, 83, 1),
+                      width: 3,
+                    ),
+                  ),
                   labelText: "Title",
                   labelStyle: TextStyle(
-                    color: const Color.fromARGB(255, 36, 167, 40),
+                    color: Colors.greenAccent[700],
                   ),
-                  enabledBorder: OutlineInputBorder(),
-                  focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                          color: const Color.fromARGB(255, 36, 167, 40),
-                          width: 2))),
+                ),
+              ),
             ),
             SizedBox(
-              height: 20,
+              height: 10,
             ),
             TextField(
-              controller: list,
+              controller: _content,
+              cursorColor: Colors.greenAccent[700],
               decoration: InputDecoration(
-                labelText: "Add to list",
                 suffixIcon: IconButton(
                   onPressed: () {
-                    addData();
+                    if (_content.text != "") {
+                      setState(() {
+                        ls.add(_content.text);
+                      });
+                      _content.clear();
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text("Empty"),
+                          duration: Duration(
+                            milliseconds: 500,
+                          ),
+                        ),
+                      );
+                    }
                   },
                   icon: Icon(
                     Icons.add,
-                    color: const Color.fromARGB(255, 36, 167, 40),
-                    size: 30,
+                    color: Colors.greenAccent[700],
                   ),
                 ),
-                alignLabelWithHint: true,
-                labelStyle: TextStyle(
-                  color: const Color.fromARGB(255, 36, 167, 40),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(
+                    color: Colors.black54,
+                  ),
                 ),
-                enabledBorder: OutlineInputBorder(),
                 focusedBorder: OutlineInputBorder(
                   borderSide: BorderSide(
-                      color: const Color.fromARGB(255, 36, 167, 40), width: 2),
+                    color: const Color.fromRGBO(0, 200, 83, 1),
+                    width: 3,
+                  ),
+                ),
+                labelText: "Add to list",
+                alignLabelWithHint: true,
+                labelStyle: TextStyle(
+                  color: Colors.greenAccent[700],
                 ),
               ),
             ),
             Expanded(
               child: ListView.builder(
-                  itemCount: ls.length,
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      // title: Text(),
-                      trailing: IconButton(
-                        onPressed: () {
-                          removeData(ls[index]);
-                        },
-                        icon: Icon(
-                          Icons.close,
-                          size: 25,
-                          color: Colors.black,
-                        ),
+                itemCount: ls.length,
+                itemBuilder: (context, index) {
+                  return ListTile(
+                    title: Text(
+                      ls[index],
+                    ),
+                    trailing: IconButton(
+                      onPressed: () {
+                        setState(() {
+                          ls.remove(ls[index]);
+                        });
+                      },
+                      icon: Icon(
+                        Icons.close,
                       ),
-                    );
-                  }),
-            )
+                    ),
+                  );
+                },
+              ),
+            ),
           ],
         ),
       ),
