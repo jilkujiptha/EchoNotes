@@ -17,7 +17,7 @@ class _EchoNotesState extends State<EchoNotes> with TickerProviderStateMixin {
   var _mydata = Hive.box('mydata');
   List list_items = [];
 
-  @override
+  // @override
   void initState() {
     // TODO: implement initState
     super.initState();
@@ -86,24 +86,17 @@ class _EchoNotesState extends State<EchoNotes> with TickerProviderStateMixin {
             builder: (context, onPressed, progress) {
               return FloatingActionButton(
                 backgroundColor: Colors.greenAccent[700],
-                onPressed: onPressed,
+                onPressed: () {
+                  Navigator.pushNamed(context, "text");
+                },
                 child: const Icon(
-                  Icons.close,
+                  Icons.notes,
+                  color: Colors.black,
                 ),
               );
             },
           ),
           children: [
-            FloatingActionButton.small(
-              backgroundColor: Colors.greenAccent[700],
-              heroTag: null,
-              onPressed: () {
-                Navigator.pushNamed(context, "/notes");
-              },
-              child: const Icon(
-                Icons.notes,
-              ),
-            ),
             FloatingActionButton.small(
               heroTag: null,
               backgroundColor: Colors.greenAccent[700],
@@ -116,6 +109,7 @@ class _EchoNotesState extends State<EchoNotes> with TickerProviderStateMixin {
               },
               child: const Icon(
                 Icons.check_box,
+                color: Colors.black,
               ),
             ),
             FloatingActionButton.small(
@@ -129,7 +123,7 @@ class _EchoNotesState extends State<EchoNotes> with TickerProviderStateMixin {
                 );
               },
               child: Image.asset(
-                "./lib/Icons/check.png",
+                "./images/checked.png",
                 height: 20,
                 width: 20,
               ),
