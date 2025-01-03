@@ -66,7 +66,6 @@ class _ListPageState extends State<ListPage> {
                   (route) => false,
                 );
               }
-
               print("======================================================");
               print(_mydata.get('list'));
             },
