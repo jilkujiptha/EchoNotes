@@ -1,4 +1,6 @@
+import 'package:echonotes/echoNote.dart';
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/adapters.dart';
 
 class Task extends StatefulWidget {
   const Task({super.key});
@@ -12,6 +14,9 @@ class _TaskState extends State<Task> {
   TextEditingController task = TextEditingController();
   DateTime _currentDate = DateTime.now();
   TimeOfDay _currentTime = TimeOfDay.now();
+  List list = [];
+  List taskPage = [];
+  var _mydata = Hive.box('mydata');
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +30,45 @@ class _TaskState extends State<Task> {
         ),
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              if (title.text == "") {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text("Empty title"),
+                  ),
+                );
+              } else if (task.text == "") {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text("Content is empty"),
+                  ),
+                );
+              } else {
+                var data = {
+                  "title": title.text,
+                  "items": task.text,
+                  "time": "${_currentTime.hour}:${_currentTime.minute}",
+                  "date":
+                      "${_currentDate.year}-${_currentDate.month}-${_currentDate.day}",
+                };
+                if (_mydata.get('Task') != null) {
+                  list = _mydata.get('Task');
+                  list.add(data);
+                  _mydata.put('Task', list);
+                } else {
+                  list.add(data);
+                  _mydata.put('Task', list);
+                }
+                Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(
+                    builder: (context) => EchoNotes(),
+                  ),
+                  (route) => false,
+                );
+              }
+              print("======================================================");
+              print(_mydata.get('Task'));
+            },
             icon: Icon(
               Icons.done,
               color: Colors.white,
@@ -39,6 +82,7 @@ class _TaskState extends State<Task> {
         child: Column(
           children: [
             TextField(
+              controller: title,
               decoration: InputDecoration(
                   labelText: "Title",
                   labelStyle: TextStyle(
@@ -55,6 +99,7 @@ class _TaskState extends State<Task> {
             ),
             Expanded(
               child: TextField(
+                controller: task,
                 maxLines: 200,
                 decoration: InputDecoration(
                     labelText: "Description",

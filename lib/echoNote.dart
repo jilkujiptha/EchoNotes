@@ -20,6 +20,12 @@ class _EchoNotesState extends State<EchoNotes> with TickerProviderStateMixin {
   final _key = GlobalKey<ExpandableFabState>();
   var _mydata = Hive.box('mydata');
   List ls = [];
+  List taskk = [];
+  List textt = [];
+  String? Value;
+  bool _isanimated = false;
+
+  List<String> editDelete = ["Edit", "Delete"];
 
   // @override
   void initState() {
@@ -34,6 +40,16 @@ class _EchoNotesState extends State<EchoNotes> with TickerProviderStateMixin {
       ls = _mydata.get('list');
       print(_mydata.get("list"));
     }
+    if (_mydata.get("Task") != null) {
+      taskk = _mydata.get('Task');
+      print(_mydata.get("Task"));
+    }
+  }
+
+  void animatedContainer() {
+    setState(() {
+      _isanimated = !_isanimated;
+    });
   }
 
   @override
@@ -82,7 +98,10 @@ class _EchoNotesState extends State<EchoNotes> with TickerProviderStateMixin {
         distance: 60,
         openButtonBuilder: RotateFloatingActionButtonBuilder(
           backgroundColor: Colors.greenAccent[700],
-          child: const Icon(Icons.add),
+          child: const Icon(
+            Icons.add,
+            color: Colors.black,
+          ),
           fabSize: ExpandableFabSize.regular,
           angle: 3.14 * 2,
         ),
@@ -161,27 +180,53 @@ class _EchoNotesState extends State<EchoNotes> with TickerProviderStateMixin {
                           margin: EdgeInsets.all(5),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(15),
-                            color: Colors.blueAccent,
+                            color: const Color.fromARGB(255, 30, 134, 33),
                           ),
                           child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               ListTile(
-                                title: Text(data["title"]),
-                                trailing: IconButton(
-                                  onPressed: () {},
-                                  icon: Icon(Icons.more_vert),
+                                title: Text(
+                                  data["title"],
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                                trailing: DropdownButton<String>(
+                                  icon: Icon(
+                                    Icons.more_vert,
+                                    color: Colors.white,
+                                  ),
+                                  dropdownColor: Colors.white,
+                                  padding: EdgeInsets.all(10),
+                                  underline: Container(
+                                    height: 0,
+                                  ),
+                                  items: editDelete.map((String edit) {
+                                    return DropdownMenuItem(
+                                        value: edit,
+                                        child: Text(
+                                          edit,
+                                        ));
+                                  }).toList(),
+                                  onChanged: (value) {
+                                    setState(() {
+                                      Value = value;
+                                    });
+                                  },
                                 ),
                               ),
                               Expanded(
+                                flex: 0,
                                 child: ListView.builder(
+                                  shrinkWrap: true,
                                   itemCount: data["items"].length,
                                   itemBuilder: (context, i) {
                                     print(data);
                                     return Container(
                                       padding: EdgeInsets.only(left: 10),
                                       margin: EdgeInsets.only(bottom: 10),
-                                      child: Text(data['items'][i]),
+                                      child: Text(
+                                        data['items'][i],
+                                        style: TextStyle(color: Colors.white),
+                                      ),
                                     );
                                   },
                                 ),
@@ -193,8 +238,65 @@ class _EchoNotesState extends State<EchoNotes> with TickerProviderStateMixin {
             ),
           ),
           Container(
-            child: const Center(
-              child: Text("Task"),
+            child: Container(
+              child: Expanded(
+                child: Container(
+                    padding: EdgeInsets.all(10),
+                    child: MasonryGridView.builder(
+                        itemCount: taskk.length,
+                        mainAxisSpacing: 5,
+                        crossAxisSpacing: 5,
+                        gridDelegate:
+                            SliverSimpleGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 2),
+                        itemBuilder: (context, index) {
+                          var data = taskk[index];
+
+                          return Container(
+                            margin: EdgeInsets.all(5),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(15),
+                              color: const Color.fromARGB(255, 30, 134, 33),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                ListTile(
+                                  title: Text(
+                                    data["title"],
+                                    style: TextStyle(
+                                        color: Colors.white, fontSize: 20),
+                                  ),
+                                  // trailing:
+                                  subtitle: Column(
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Text(
+                                            data["date"],
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 12),
+                                          ),
+                                          SizedBox(
+                                            width: 10,
+                                          ),
+                                          Text(
+                                            data["time"],
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 12),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        })),
+              ),
             ),
           ),
         ],
