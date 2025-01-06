@@ -1,4 +1,6 @@
+import 'package:echonotes/echoNote.dart';
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/adapters.dart';
 
 class TextPage extends StatefulWidget {
   const TextPage({super.key});
@@ -10,6 +12,9 @@ class TextPage extends StatefulWidget {
 class _TextState extends State<TextPage> {
   TextEditingController title = TextEditingController();
   TextEditingController text = TextEditingController();
+  final _mydata = Hive.box('mydata');
+  List list = [];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,7 +27,42 @@ class _TextState extends State<TextPage> {
         ),
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              if (title.text == "") {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text("Empty title"),
+                  ),
+                );
+              } else if (text.text == "") {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text("Content is empty"),
+                  ),
+                );
+              } else {
+                var data = {
+                  "title": title.text,
+                  "items": text.text,
+                };
+                if (_mydata.get('text') != null) {
+                  list = _mydata.get('text');
+                  list.add(data);
+                  _mydata.put('text', list);
+                } else {
+                  list.add(data);
+                  _mydata.put('text', list);
+                }
+                Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(
+                    builder: (context) => EchoNotes(),
+                  ),
+                  (route) => false,
+                );
+              }
+              print("======================================================");
+              print(_mydata.get('text'));
+            },
             icon: Icon(
               Icons.done,
               color: Colors.white,
@@ -35,6 +75,7 @@ class _TextState extends State<TextPage> {
         child: Column(
           children: [
             TextField(
+              controller: title,
               decoration: InputDecoration(
                   labelText: "Title",
                   labelStyle: TextStyle(
@@ -51,6 +92,7 @@ class _TextState extends State<TextPage> {
             ),
             Expanded(
               child: TextField(
+                controller: text,
                 maxLines: 200,
                 decoration: InputDecoration(
                     labelText: "Content",

@@ -10,11 +10,11 @@ class ListPage extends StatefulWidget {
 }
 
 class _ListPageState extends State<ListPage> {
-  TextEditingController _title = TextEditingController();
-  TextEditingController _content = TextEditingController();
+  final TextEditingController _title = TextEditingController();
+  final TextEditingController _content = TextEditingController();
   List ls = [];
   List list = [];
-  var _mydata = Hive.box('mydata');
+  final _mydata = Hive.box('mydata');
 
   @override
   Widget build(BuildContext context) {

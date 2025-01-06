@@ -12,11 +12,11 @@ class Task extends StatefulWidget {
 class _TaskState extends State<Task> {
   TextEditingController title = TextEditingController();
   TextEditingController task = TextEditingController();
-  DateTime _currentDate = DateTime.now();
-  TimeOfDay _currentTime = TimeOfDay.now();
+  final DateTime _currentDate = DateTime.now();
+  final TimeOfDay _currentTime = TimeOfDay.now();
   List list = [];
   List taskPage = [];
-  var _mydata = Hive.box('mydata');
+  final _mydata = Hive.box('mydata');
 
   @override
   Widget build(BuildContext context) {
@@ -50,6 +50,7 @@ class _TaskState extends State<Task> {
                   "time": "${_currentTime.hour}:${_currentTime.minute}",
                   "date":
                       "${_currentDate.year}-${_currentDate.month}-${_currentDate.day}",
+                  "_isUpdown": false,
                 };
                 if (_mydata.get('Task') != null) {
                   list = _mydata.get('Task');

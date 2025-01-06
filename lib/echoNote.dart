@@ -18,16 +18,20 @@ class EchoNotes extends StatefulWidget {
 class _EchoNotesState extends State<EchoNotes> with TickerProviderStateMixin {
   late TabController _tabController;
   final _key = GlobalKey<ExpandableFabState>();
-  var _mydata = Hive.box('mydata');
+  final _mydata = Hive.box('mydata');
   List ls = [];
   List taskk = [];
   List textt = [];
   String? Value;
-  bool _isanimated = false;
+  String? editDelete;
+  bool _isupDown = false;
+  double width = double.infinity;
+  double height = 10;
 
-  List<String> editDelete = ["Edit", "Delete"];
+  List<bool> _expandList = List.generate(10, (context) => false);
 
   // @override
+  @override
   void initState() {
     // TODO: implement initState
     super.initState();
@@ -44,12 +48,10 @@ class _EchoNotesState extends State<EchoNotes> with TickerProviderStateMixin {
       taskk = _mydata.get('Task');
       print(_mydata.get("Task"));
     }
-  }
-
-  void animatedContainer() {
-    setState(() {
-      _isanimated = !_isanimated;
-    });
+    if (_mydata.get("text") != null) {
+      textt = _mydata.get('text');
+      print(_mydata.get("text"));
+    }
   }
 
   @override
@@ -158,8 +160,64 @@ class _EchoNotesState extends State<EchoNotes> with TickerProviderStateMixin {
         controller: _tabController,
         children: [
           Container(
-            child: const Center(
-              child: Text("Text"),
+            child: Expanded(
+              child: Container(
+                padding: EdgeInsets.all(10),
+                child: MasonryGridView.builder(
+                    itemCount: textt.length,
+                    mainAxisSpacing: 5,
+                    crossAxisSpacing: 5,
+                    gridDelegate:
+                        SliverSimpleGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2),
+                    itemBuilder: (context, index) {
+                      var data = textt[index];
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.pushNamed(context, "data2",
+                              arguments: index);
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            color: const Color.fromARGB(255, 30, 134, 33),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              ListTile(
+                                title: Text(
+                                  data["title"],
+                                  style: TextStyle(
+                                      color: Colors.white, fontSize: 20),
+                                ),
+                                // trailing: DropdownButton<String>(
+                                //     value: editDelete,
+                                //     items: [
+                                //       DropdownMenuItem<String>(
+                                //           child: TextButton(
+                                //               onPressed: () {},
+                                //               child: Text("Edit")))
+                                //     ],
+                                //     onChanged: (String? value) {
+                                //       setState(() {
+                                //         editDelete = value;
+                                //       });
+                                //     })
+                              ),
+                              Container(
+                                padding: EdgeInsets.only(bottom: 10, left: 15),
+                                child: Text(
+                                  data["items"],
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    }),
+              ),
             ),
           ),
           Container(
@@ -176,62 +234,60 @@ class _EchoNotesState extends State<EchoNotes> with TickerProviderStateMixin {
                       itemBuilder: (context, index) {
                         var data = ls[index];
 
-                        return Container(
-                          margin: EdgeInsets.all(5),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(15),
-                            color: const Color.fromARGB(255, 30, 134, 33),
-                          ),
-                          child: Column(
-                            children: [
-                              ListTile(
-                                title: Text(
-                                  data["title"],
-                                  style: TextStyle(color: Colors.white),
+                        return GestureDetector(
+                          onTap: () {
+                            Navigator.pushNamed(context, "data1",
+                                arguments: index);
+                          },
+                          child: Container(
+                            margin: EdgeInsets.all(5),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              color: const Color.fromARGB(255, 30, 134, 33),
+                            ),
+                            child: Column(
+                              children: [
+                                ListTile(
+                                  title: Text(
+                                    data["title"],
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                  // trailing: DropdownButton<String>(
+                                  //     value: editDelete,
+                                  //     items: [
+                                  //       DropdownMenuItem(
+                                  //           child: TextButton(
+                                  //               onPressed: () {},
+                                  //               child: Text("Edit")))
+                                  //     ],
+                                  //     onChanged: (String? value) {
+                                  //       setState(() {
+                                  //         editDelete = value;
+                                  //       });
+                                  //     })
                                 ),
-                                trailing: DropdownButton<String>(
-                                  icon: Icon(
-                                    Icons.more_vert,
-                                    color: Colors.white,
-                                  ),
-                                  dropdownColor: Colors.white,
-                                  padding: EdgeInsets.all(10),
-                                  underline: Container(
-                                    height: 0,
-                                  ),
-                                  items: editDelete.map((String edit) {
-                                    return DropdownMenuItem(
-                                        value: edit,
+                                Expanded(
+                                  flex: 0,
+                                  child: ListView.builder(
+                                    shrinkWrap: true,
+                                    itemCount: data["items"].length,
+                                    itemBuilder: (context, i) {
+                                      print(data);
+                                      return Container(
+                                        padding: EdgeInsets.only(left: 10),
+                                        margin: EdgeInsets.only(bottom: 10),
                                         child: Text(
-                                          edit,
-                                        ));
-                                  }).toList(),
-                                  onChanged: (value) {
-                                    setState(() {
-                                      Value = value;
-                                    });
-                                  },
+                                          data['items'][i],
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 18),
+                                        ),
+                                      );
+                                    },
+                                  ),
                                 ),
-                              ),
-                              Expanded(
-                                flex: 0,
-                                child: ListView.builder(
-                                  shrinkWrap: true,
-                                  itemCount: data["items"].length,
-                                  itemBuilder: (context, i) {
-                                    print(data);
-                                    return Container(
-                                      padding: EdgeInsets.only(left: 10),
-                                      margin: EdgeInsets.only(bottom: 10),
-                                      child: Text(
-                                        data['items'][i],
-                                        style: TextStyle(color: Colors.white),
-                                      ),
-                                    );
-                                  },
-                                ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         );
                       })),
@@ -251,47 +307,114 @@ class _EchoNotesState extends State<EchoNotes> with TickerProviderStateMixin {
                                 crossAxisCount: 2),
                         itemBuilder: (context, index) {
                           var data = taskk[index];
-
                           return Container(
-                            margin: EdgeInsets.all(5),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(15),
-                              color: const Color.fromARGB(255, 30, 134, 33),
-                            ),
                             child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                ListTile(
-                                  title: Text(
-                                    data["title"],
-                                    style: TextStyle(
-                                        color: Colors.white, fontSize: 20),
+                                Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.vertical(
+                                        top: Radius.circular(10)),
+                                    color:
+                                        const Color.fromARGB(255, 30, 134, 33),
                                   ),
-                                  // trailing:
-                                  subtitle: Column(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
-                                      Row(
-                                        children: [
-                                          Text(
-                                            data["date"],
+                                      ListTile(
+                                          title: Text(
+                                            data["title"],
                                             style: TextStyle(
                                                 color: Colors.white,
-                                                fontSize: 12),
+                                                fontSize: 20),
                                           ),
-                                          SizedBox(
-                                            width: 10,
+                                          subtitle: Column(
+                                            children: [
+                                              Row(
+                                                children: [
+                                                  Text(
+                                                    data["date"],
+                                                    style: TextStyle(
+                                                        color: Colors.white,
+                                                        fontSize: 12),
+                                                  ),
+                                                  SizedBox(
+                                                    width: 10,
+                                                  ),
+                                                  Text(
+                                                    data["time"],
+                                                    style: TextStyle(
+                                                        color: Colors.white,
+                                                        fontSize: 12),
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
                                           ),
-                                          Text(
-                                            data["time"],
-                                            style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 12),
-                                          ),
-                                        ],
-                                      ),
+                                          trailing: IconButton(
+                                            onPressed: () {
+                                              setState(() {
+                                                _expandList[index] =
+                                                    !_expandList[index];
+                                              });
+                                            },
+                                            icon: _expandList[index] == false
+                                                ? Image.asset(
+                                                    "./images/down-arrow.png",
+                                                    width: 20,
+                                                    height: 20,
+                                                    color: Colors.white,
+                                                  )
+                                                : Image.asset(
+                                                    "./images/upload.png",
+                                                    width: 15,
+                                                    height: 15,
+                                                    color: Colors.white,
+                                                  ),
+                                          )),
                                     ],
                                   ),
                                 ),
+                                AnimatedContainer(
+                                  width: width,
+                                  height: _expandList[index] == true
+                                      ? height = 100
+                                      : height = 20,
+                                  alignment: Alignment.bottomCenter,
+                                  curve: Curves.easeInOut,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.vertical(
+                                        bottom: Radius.circular(15)),
+                                    color:
+                                        const Color.fromARGB(255, 30, 134, 33),
+                                  ),
+                                  duration: Duration(milliseconds: 500),
+                                  child: ListView(
+                                    children: [
+                                      SizedBox(
+                                        height: 20,
+                                      ),
+                                      Container(
+                                        padding: EdgeInsets.only(left: 10),
+                                        child: Text(
+                                          data["items"],
+                                          style: TextStyle(color: Colors.white),
+                                        ),
+                                      ),
+                                      ListTile(
+                                        title: Text("Task ended",
+                                            style:
+                                                TextStyle(color: Colors.white)),
+                                        trailing: IconButton(
+                                            onPressed: () {},
+                                            icon: Icon(
+                                              Icons.more_vert,
+                                              color: Colors.white,
+                                            )),
+                                      ),
+                                    ],
+                                  ),
+                                )
                               ],
                             ),
                           );
