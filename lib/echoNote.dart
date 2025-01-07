@@ -27,7 +27,8 @@ class _EchoNotesState extends State<EchoNotes> with TickerProviderStateMixin {
   bool _isupDown = false;
   double width = double.infinity;
   double height = 10;
-
+  bool _isDate = false;
+  DateTime _selectedDay = DateTime.now();
   List<bool> _expandList = List.generate(10, (context) => false);
 
   // @override
@@ -52,6 +53,12 @@ class _EchoNotesState extends State<EchoNotes> with TickerProviderStateMixin {
       textt = _mydata.get('text');
       print(_mydata.get("text"));
     }
+  }
+
+  Color? getDateColor() {
+    if (_selectedDay.day > DateTime.now().day &&
+        _selectedDay.month > DateTime.now().month &&
+        _selectedDay.year > DateTime.now().year) {}
   }
 
   @override
@@ -186,25 +193,54 @@ class _EchoNotesState extends State<EchoNotes> with TickerProviderStateMixin {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               ListTile(
-                                title: Text(
-                                  data["title"],
-                                  style: TextStyle(
-                                      color: Colors.white, fontSize: 20),
-                                ),
-                                // trailing: DropdownButton<String>(
-                                //     value: editDelete,
-                                //     items: [
-                                //       DropdownMenuItem<String>(
-                                //           child: TextButton(
-                                //               onPressed: () {},
-                                //               child: Text("Edit")))
-                                //     ],
-                                //     onChanged: (String? value) {
-                                //       setState(() {
-                                //         editDelete = value;
-                                //       });
-                                //     })
-                              ),
+                                  title: Text(
+                                    data["title"],
+                                    style: TextStyle(
+                                        color: Colors.white, fontSize: 20),
+                                  ),
+                                  trailing: DropdownButton<String>(
+                                      icon: Icon(
+                                        Icons.more_vert,
+                                        color: Colors.white,
+                                      ),
+                                      underline: Container(
+                                        height: 0,
+                                      ),
+                                      value: editDelete,
+                                      items: [
+                                        DropdownMenuItem<String>(
+                                            value: "Edit",
+                                            child: TextButton(
+                                                onPressed: () {
+                                                  Navigator.pushNamed(
+                                                      context, "edit1",
+                                                      arguments: index);
+                                                },
+                                                child: Text(
+                                                  "Edit",
+                                                  style: TextStyle(
+                                                      color: Colors.black),
+                                                ))),
+                                        DropdownMenuItem<String>(
+                                            value: "Delete",
+                                            child: TextButton(
+                                                onPressed: () {
+                                                  setState(() {
+                                                    textt.removeAt(index);
+                                                    _mydata.put("text", textt);
+                                                  });
+                                                },
+                                                child: Text(
+                                                  "Delete",
+                                                  style: TextStyle(
+                                                      color: Colors.black),
+                                                )))
+                                      ],
+                                      onChanged: (String? value) {
+                                        setState(() {
+                                          editDelete = value;
+                                        });
+                                      })),
                               Container(
                                 padding: EdgeInsets.only(bottom: 10, left: 15),
                                 child: Text(
@@ -248,24 +284,53 @@ class _EchoNotesState extends State<EchoNotes> with TickerProviderStateMixin {
                             child: Column(
                               children: [
                                 ListTile(
-                                  title: Text(
-                                    data["title"],
-                                    style: TextStyle(color: Colors.white),
-                                  ),
-                                  // trailing: DropdownButton<String>(
-                                  //     value: editDelete,
-                                  //     items: [
-                                  //       DropdownMenuItem(
-                                  //           child: TextButton(
-                                  //               onPressed: () {},
-                                  //               child: Text("Edit")))
-                                  //     ],
-                                  //     onChanged: (String? value) {
-                                  //       setState(() {
-                                  //         editDelete = value;
-                                  //       });
-                                  //     })
-                                ),
+                                    title: Text(
+                                      data["title"],
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                    trailing: DropdownButton<String>(
+                                        icon: Icon(
+                                          Icons.more_vert,
+                                          color: Colors.white,
+                                        ),
+                                        underline: Container(
+                                          height: 0,
+                                        ),
+                                        value: editDelete,
+                                        items: [
+                                          DropdownMenuItem<String>(
+                                              value: "Edit",
+                                              child: TextButton(
+                                                  onPressed: () {
+                                                    Navigator.pushNamed(
+                                                        context, "edit2",
+                                                        arguments: index);
+                                                  },
+                                                  child: Text(
+                                                    "Edit",
+                                                    style: TextStyle(
+                                                        color: Colors.black),
+                                                  ))),
+                                          DropdownMenuItem<String>(
+                                              value: "Delete",
+                                              child: TextButton(
+                                                  onPressed: () {
+                                                    setState(() {
+                                                      ls.removeAt(index);
+                                                      _mydata.put("list", ls);
+                                                    });
+                                                  },
+                                                  child: Text(
+                                                    "Delete",
+                                                    style: TextStyle(
+                                                        color: Colors.black),
+                                                  )))
+                                        ],
+                                        onChanged: (String? value) {
+                                          setState(() {
+                                            editDelete = value;
+                                          });
+                                        })),
                                 Expanded(
                                   flex: 0,
                                   child: ListView.builder(
@@ -306,6 +371,10 @@ class _EchoNotesState extends State<EchoNotes> with TickerProviderStateMixin {
                             SliverSimpleGridDelegateWithFixedCrossAxisCount(
                                 crossAxisCount: 2),
                         itemBuilder: (context, index) {
+                          // print(_selectedDay);
+                          // print(DateTime.now());
+                          // print(
+                          //     "==============================================");
                           var data = taskk[index];
                           return Container(
                             child: Column(
@@ -314,8 +383,7 @@ class _EchoNotesState extends State<EchoNotes> with TickerProviderStateMixin {
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.vertical(
                                         top: Radius.circular(10)),
-                                    color:
-                                        const Color.fromARGB(255, 30, 134, 33),
+                                    color: getDateColor(),
                                   ),
                                   child: Column(
                                     crossAxisAlignment:
@@ -385,8 +453,7 @@ class _EchoNotesState extends State<EchoNotes> with TickerProviderStateMixin {
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.vertical(
                                         bottom: Radius.circular(15)),
-                                    color:
-                                        const Color.fromARGB(255, 30, 134, 33),
+                                    color: getDateColor(),
                                   ),
                                   duration: Duration(milliseconds: 500),
                                   child: ListView(
@@ -402,15 +469,55 @@ class _EchoNotesState extends State<EchoNotes> with TickerProviderStateMixin {
                                         ),
                                       ),
                                       ListTile(
-                                        title: Text("Task ended",
-                                            style:
-                                                TextStyle(color: Colors.white)),
-                                        trailing: IconButton(
+                                        subtitle: TextButton(
                                             onPressed: () {},
+                                            child: Text("data")),
+                                        trailing: DropdownButton<String>(
                                             icon: Icon(
                                               Icons.more_vert,
                                               color: Colors.white,
-                                            )),
+                                            ),
+                                            underline: Container(
+                                              width: 0,
+                                            ),
+                                            value: editDelete,
+                                            items: [
+                                              DropdownMenuItem<String>(
+                                                  value: "Edit",
+                                                  child: TextButton(
+                                                      onPressed: () {
+                                                        Navigator.pushNamed(
+                                                            context, "edit3",
+                                                            arguments: index);
+                                                      },
+                                                      child: Text(
+                                                        "Edit",
+                                                        style: TextStyle(
+                                                            color:
+                                                                Colors.black),
+                                                      ))),
+                                              DropdownMenuItem<String>(
+                                                  value: "Delete",
+                                                  child: TextButton(
+                                                      onPressed: () {
+                                                        setState(() {
+                                                          taskk.removeAt(index);
+                                                          _mydata.put(
+                                                              "Task", taskk);
+                                                        });
+                                                      },
+                                                      child: Text(
+                                                        "Delete",
+                                                        style: TextStyle(
+                                                            color:
+                                                                Colors.black),
+                                                      )))
+                                            ],
+                                            onChanged: (String? value) {
+                                              setState(() {
+                                                editDelete = value;
+                                              });
+                                            }),
                                       ),
                                     ],
                                   ),

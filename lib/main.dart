@@ -1,4 +1,7 @@
 import 'package:echonotes/echoNote.dart';
+import 'package:echonotes/editPage1.dart';
+import 'package:echonotes/editPage2.dart';
+import 'package:echonotes/editPage3.dart';
 import 'package:echonotes/listPage.dart';
 import 'package:echonotes/passData1.dart';
 import 'package:echonotes/passData2.dart';
@@ -20,6 +23,9 @@ void main() async {
       "text": (context) => TextPage(),
       "data1": (context) => PassData1(),
       "data2": (context) => PassData2(),
+      "edit1": (context) => EditPage1(),
+      "edit2": (context) => EditPage2(),
+      "edit3": (context) => EditPage3()
     },
   ));
 }

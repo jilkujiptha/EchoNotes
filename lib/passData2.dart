@@ -32,31 +32,26 @@ class _PassData2State extends State<PassData2> {
   Widget build(BuildContext context) {
     pass = ModalRoute.of(context)!.settings.arguments as int;
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.greenAccent[700],
-        iconTheme: IconThemeData(
-          color: Colors.white,
-        ),
-        title: Text(
-          textt[pass]["title"],
-          style: TextStyle(
+        backgroundColor: Colors.white,
+        appBar: AppBar(
+          backgroundColor: Colors.greenAccent[700],
+          iconTheme: IconThemeData(
             color: Colors.white,
-            fontWeight: FontWeight.bold,
           ),
+          title: Text(
+            textt[pass]["title"],
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          actions: [
+            IconButton(onPressed: () {}, icon: Icon(Icons.edit)),
+            IconButton(onPressed: () {}, icon: Icon(Icons.delete))
+          ],
         ),
-        actions: [
-          IconButton(onPressed: () {}, icon: Icon(Icons.edit)),
-          IconButton(onPressed: () {}, icon: Icon(Icons.delete))
-        ],
-      ),
-      body: ListView.builder(
-          itemCount: textt.length,
-          itemBuilder: (context, index) {
-            return ListTile(
-              title: Text(textt[pass]["items"]),
-            );
-          }),
-    );
+        body: ListTile(
+          title: Text(textt[pass]["items"]),
+        ));
   }
 }

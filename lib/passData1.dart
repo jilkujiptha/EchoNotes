@@ -53,19 +53,18 @@ class _PassData1State extends State<PassData1> {
       ),
       body: Expanded(
           child: ListView.builder(
-              itemCount: ls.length,
+              itemCount: ls[pass]["items"].length,
               itemBuilder: (context, index) {
                 return ListTile(
-                  leading: Checkbox(
-                    value: _isChecked,
-                    onChanged: (bool? value) {
-                      setState(() {
-                        _isChecked = value!;
-                      });
-                    },
-                  ),
-                  title: Text(ls[pass]["items"][index]),
-                );
+                    leading: Checkbox(
+                      value: _isChecked,
+                      onChanged: (bool? value) {
+                        setState(() {
+                          _isChecked = value!;
+                        });
+                      },
+                    ),
+                    title: Text(ls[pass]["items"][index]));
               })),
     );
   }

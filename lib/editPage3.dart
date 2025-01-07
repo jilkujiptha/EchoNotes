@@ -3,26 +3,46 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:table_calendar/table_calendar.dart';
 
-class Task extends StatefulWidget {
-  const Task({super.key});
+class EditPage3 extends StatefulWidget {
+  const EditPage3({super.key});
 
   @override
-  State<Task> createState() => _TaskState();
+  State<EditPage3> createState() => _EditPage3State();
 }
 
-class _TaskState extends State<Task> {
+class _EditPage3State extends State<EditPage3> {
   TextEditingController title = TextEditingController();
   TextEditingController task = TextEditingController();
-  final DateTime _currentDate = DateTime.now();
+  // final DateTime _currentDate = DateTime.now();
   final TimeOfDay _currentTime = TimeOfDay.now();
-  List list = [];
-  List taskPage = [];
-  final _mydata = Hive.box('mydata');
   DateTime _selectedDay = DateTime.now();
   DateTime _focuseDay = DateTime.now();
 
+  List list = [];
+  List taskPage = [];
+  final _mydata = Hive.box('mydata');
+  var index;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    Future.delayed(Duration(microseconds: 10), () {
+      edi();
+    });
+  }
+
+  void edi() {
+    setState(() {
+      list = _mydata.get("Task");
+      title.text = list[index]["title"];
+      task.text = list[index]["items"];
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    index = ModalRoute.of(context)!.settings.arguments as int;
     return Scaffold(
       appBar: AppBar(
         iconTheme: IconThemeData(color: Colors.white),
@@ -53,14 +73,16 @@ class _TaskState extends State<Task> {
                   "time": "${_currentTime.hour}:${_currentTime.minute}",
                   "date":
                       "${_selectedDay.day}-${_selectedDay.month}-${_selectedDay.year}",
-                  "_isUpdown": false,
+                  "_isUpdown": false
                 };
                 if (_mydata.get('Task') != null) {
                   list = _mydata.get('Task');
-                  list.add(data);
+                  list[index] = data;
+                  // list.add(data);
                   _mydata.put('Task', list);
                 } else {
-                  list.add(data);
+                  list[index] = data;
+                  // list.add(data);
                   _mydata.put('Task', list);
                 }
                 Navigator.of(context).pushAndRemoveUntil(
@@ -200,10 +222,12 @@ class _TaskState extends State<Task> {
                   ),
                 ),
                 Spacer(),
-                Text("${_currentTime.hour}:${_currentTime.minute}",
-                    style: TextStyle(
-                        color: const Color.fromARGB(255, 36, 167, 40),
-                        fontWeight: FontWeight.bold))
+                Text(
+                  "${_currentTime.hour}:${_currentTime.minute}",
+                  style: TextStyle(
+                      color: const Color.fromARGB(255, 36, 167, 40),
+                      fontWeight: FontWeight.bold),
+                )
               ],
             )
           ],
