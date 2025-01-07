@@ -28,7 +28,7 @@ class _EchoNotesState extends State<EchoNotes> with TickerProviderStateMixin {
   double width = double.infinity;
   double height = 10;
   bool _isDate = false;
-  DateTime _selectedDay = DateTime.now();
+  var _selectedDay;
   List<bool> _expandList = List.generate(10, (context) => false);
 
   // @override
@@ -38,6 +38,7 @@ class _EchoNotesState extends State<EchoNotes> with TickerProviderStateMixin {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
     listData();
+    // Date();
   }
 
   void listData() {
@@ -56,9 +57,17 @@ class _EchoNotesState extends State<EchoNotes> with TickerProviderStateMixin {
   }
 
   Color? getDateColor() {
-    if (_selectedDay.day > DateTime.now().day &&
-        _selectedDay.month > DateTime.now().month &&
-        _selectedDay.year > DateTime.now().year) {}
+    if (_selectedDay.day > DateTime.now().day ||
+        _selectedDay.month > DateTime.now().month ||
+        _selectedDay.year > DateTime.now().year) {
+      _isDate = true;
+      return const Color.fromARGB(255, 51, 138, 208);
+    } else {
+      print(_selectedDay.day);
+      _isDate = false;
+
+      return const Color.fromARGB(255, 173, 64, 56);
+    }
   }
 
   @override
@@ -376,15 +385,17 @@ class _EchoNotesState extends State<EchoNotes> with TickerProviderStateMixin {
                           // print(
                           //     "==============================================");
                           var data = taskk[index];
+                          _selectedDay = data["date"];
                           return Container(
                             child: Column(
                               children: [
                                 Container(
                                   decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.vertical(
-                                        top: Radius.circular(10)),
-                                    color: getDateColor(),
-                                  ),
+                                      borderRadius: BorderRadius.vertical(
+                                          top: Radius.circular(10)),
+                                      color: data["_isComplete"]
+                                          ? Colors.green[400]
+                                          : getDateColor()),
                                   child: Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
@@ -393,18 +404,21 @@ class _EchoNotesState extends State<EchoNotes> with TickerProviderStateMixin {
                                           title: Text(
                                             data["title"],
                                             style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 20),
+                                                color: Colors.black,
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.bold),
                                           ),
                                           subtitle: Column(
                                             children: [
                                               Row(
                                                 children: [
                                                   Text(
-                                                    data["date"],
+                                                    "${data["date"].day}-${data["date"].month}-${data["date"].year}",
                                                     style: TextStyle(
-                                                        color: Colors.white,
-                                                        fontSize: 12),
+                                                        color: Colors.black,
+                                                        fontSize: 12,
+                                                        fontWeight:
+                                                            FontWeight.bold),
                                                   ),
                                                   SizedBox(
                                                     width: 10,
@@ -412,8 +426,10 @@ class _EchoNotesState extends State<EchoNotes> with TickerProviderStateMixin {
                                                   Text(
                                                     data["time"],
                                                     style: TextStyle(
-                                                        color: Colors.white,
-                                                        fontSize: 12),
+                                                        color: Colors.black,
+                                                        fontSize: 12,
+                                                        fontWeight:
+                                                            FontWeight.bold),
                                                   ),
                                                 ],
                                               ),
@@ -431,13 +447,13 @@ class _EchoNotesState extends State<EchoNotes> with TickerProviderStateMixin {
                                                     "./images/down-arrow.png",
                                                     width: 20,
                                                     height: 20,
-                                                    color: Colors.white,
+                                                    color: Colors.black,
                                                   )
                                                 : Image.asset(
                                                     "./images/upload.png",
                                                     width: 15,
                                                     height: 15,
-                                                    color: Colors.white,
+                                                    color: Colors.black,
                                                   ),
                                           )),
                                     ],
@@ -453,7 +469,9 @@ class _EchoNotesState extends State<EchoNotes> with TickerProviderStateMixin {
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.vertical(
                                         bottom: Radius.circular(15)),
-                                    color: getDateColor(),
+                                    color: data["_isComplete"]
+                                        ? Colors.green[400]
+                                        : getDateColor(),
                                   ),
                                   duration: Duration(milliseconds: 500),
                                   child: ListView(
@@ -462,20 +480,61 @@ class _EchoNotesState extends State<EchoNotes> with TickerProviderStateMixin {
                                         height: 20,
                                       ),
                                       Container(
-                                        padding: EdgeInsets.only(left: 10),
+                                        padding: EdgeInsets.only(left: 15),
                                         child: Text(
                                           data["items"],
-                                          style: TextStyle(color: Colors.white),
+                                          style: TextStyle(color: Colors.black),
                                         ),
                                       ),
                                       ListTile(
                                         subtitle: TextButton(
-                                            onPressed: () {},
-                                            child: Text("data")),
+                                            style: TextButton.styleFrom(
+                                                padding: EdgeInsets.only(
+                                              left: 0,
+                                              right: 0,
+                                            )),
+                                            onPressed: () {
+                                              print(data["date"]);
+
+                                              setState(() {
+                                                if (data["date"].day <=
+                                                        DateTime.now().day ||
+                                                    data["date"].month <
+                                                        DateTime.now().month) {
+                                                  data["_isComplete"] = false;
+                                                  _mydata.put("Task", taskk);
+                                                } else {
+                                                  data["_isComplete"] = true;
+                                                  _mydata.put("Task", taskk);
+
+                                                  print(taskk);
+                                                  print("===============");
+                                                }
+                                              });
+                                            },
+                                            child: Text(
+                                              data["_isComplete"]
+                                                  ? "Completed"
+                                                  : data["date"].day >
+                                                              DateTime.now()
+                                                                  .day ||
+                                                          data["date"].month >
+                                                              DateTime.now()
+                                                                  .month ||
+                                                          data["date"].year >
+                                                              DateTime.now()
+                                                                  .year
+                                                      ? "MarkAsDone"
+                                                      : "Task Ended",
+                                              style: TextStyle(
+                                                  color: Colors.black,
+                                                  fontSize: 10,
+                                                  fontWeight: FontWeight.bold),
+                                            )),
                                         trailing: DropdownButton<String>(
                                             icon: Icon(
                                               Icons.more_vert,
-                                              color: Colors.white,
+                                              color: Colors.black,
                                             ),
                                             underline: Container(
                                               width: 0,

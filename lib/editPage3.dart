@@ -71,9 +71,9 @@ class _EditPage3State extends State<EditPage3> {
                   "title": title.text,
                   "items": task.text,
                   "time": "${_currentTime.hour}:${_currentTime.minute}",
-                  "date":
-                      "${_selectedDay.day}-${_selectedDay.month}-${_selectedDay.year}",
-                  "_isUpdown": false
+                  "date": _selectedDay,
+                  "_isUpdown": false,
+                  "_isComplete": false,
                 };
                 if (_mydata.get('Task') != null) {
                   list = _mydata.get('Task');
